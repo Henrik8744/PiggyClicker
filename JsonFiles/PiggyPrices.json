@@ -1,0 +1,1 @@
+[{"Id": 1, "Name": "Farm", "Price": 100, "Amount": 7, "MPS": 11.390625, "Upgrade1": true, "Upgrade2": true, "Upgrade3": false}, {"Id": 2, "Name": "Butcher", "Price": 250, "Amount": 0, "MPS": 3, "Upgrade1": false, "Upgrade2": false, "Upgrade3": false}, {"Id": 3, "Name": "Shop", "Price": 800, "Amount": 0, "MPS": 10, "Upgrade1": false, "Upgrade2": false, "Upgrade3": false}]
