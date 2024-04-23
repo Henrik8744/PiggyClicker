@@ -1,0 +1,9 @@
+[
+    {
+        "Id": 1,
+        "Name": "Farm",
+        "Price": 100,
+        "Amount": 0,
+        "MPS": 1
+    }
+]
