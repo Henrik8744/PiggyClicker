@@ -35,7 +35,6 @@ def perSecond():
         time.sleep(1)
 
 def decide():
-    global moneyPerSecond
     print("Type 1 to click")
     print("Type 2 to buy clicker upgrades")
     print("Type 3 for buildings")
@@ -46,6 +45,16 @@ def decide():
     if decision == "1":
         click()
     elif decision == "3":
+        purchaseBuildings
+    elif decision == "4":
+        purchaseBuildingUpgrades()
+    elif decision == "5":
+         checkStats()
+    else:
+        click()
+
+def purchaseBuildings():
+        global moneyPerSecond
         print(f"${buildingData[0]["Price"]:.2f} {buildingData[0]["Name"]}: ${buildingData[0]["MPS"]:.2f}/sec (You have {buildingData[0]["Amount"]})")
         print(f"${buildingData[1]["Price"]:.2f} {buildingData[1]["Name"]}: ${buildingData[1]["MPS"]:.2f}/sec (You have {buildingData[1]["Amount"]})")
         print(f"${buildingData[2]["Price"]:.2f} {buildingData[2]["Name"]}: ${buildingData[2]["MPS"]:.2f}/sec (You have {buildingData[2]["Amount"]})")
@@ -56,7 +65,8 @@ def decide():
             buildingDataFile.write(str(buildingData).replace("'", '"').replace("True", "true").replace("False", "false"))
             buildingDataFile.close()
             decide()
-    elif decision == "4":
+
+def purchaseBuildingUpgrades():
         print(buildingData[0]["Name"])
         print(buildingData[1]["Name"])
         print(buildingData[2]["Name"])
@@ -71,16 +81,13 @@ def decide():
             buildingDataFile.write(str(buildingData).replace("'", '"').replace("True", "true").replace("False", "false"))
             buildingDataFile.close()
             decide()
-
-    elif decision == "5":
+ 
+def checkStats():
         print(f"You have ${balance:.2f}!")
         print(f"You make ${moneyPerClick:.2f} everytime you click!")
         print(f"You make ${moneyPerSecond:.2f} every second!")
         time.sleep(6)
         decide()
-    else:
-        click()
-
 
 perSecondThread = threading.Thread(target = perSecond)
 decideThread = threading.Thread(target = decide)
