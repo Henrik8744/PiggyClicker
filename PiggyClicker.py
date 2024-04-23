@@ -61,12 +61,12 @@ def decide():
         print(buildingData[1]["Name"])
         print(buildingData[2]["Name"])
         selectedBuilding = int(input("Which building would you like to get an upgrade for? ").strip())
-        print(buildingData[selectedBuilding - 1]["Upgrade1"])
-        print(buildingData[selectedBuilding - 1]["Upgrade2"])
-        print(buildingData[selectedBuilding - 1]["Upgrade3"])
+        print(f"${buildingData[selectedBuilding - 1]["Upgrades"][0]["Price"]:.2f} {buildingData[selectedBuilding - 1]["Upgrades"][0]["Name"]}")
+        print(f"${buildingData[selectedBuilding - 1]["Upgrades"][1]["Price"]:.2f} {buildingData[selectedBuilding - 1]["Upgrades"][1]["Name"]}")
+        print(f"${buildingData[selectedBuilding - 1]["Upgrades"][2]["Price"]:.2f} {buildingData[selectedBuilding - 1]["Upgrades"][2]["Name"]}")
         selectedBuildingUpgrade = int(input("Which upgrade do you want? "))
-        buildingData[selectedBuilding - 1][f"Upgrade{selectedBuildingUpgrade}"] = True
-        buildingData[selectedBuilding - 1]["MPS"] = buildingData[selectedBuilding - 1]["MPS"] * 1.5
+        buildingData[selectedBuilding - 1]["Upgrades"][selectedBuildingUpgrade - 1]["Bought"] = True
+        buildingData[selectedBuilding - 1]["MPS"] = buildingData[selectedBuilding - 1]["MPS"] * buildingData[selectedBuilding - 1]["Upgrades"][selectedBuildingUpgrade - 1]["Multiplier"]
         with open(filename, 'w') as buildingDataFile:
             buildingDataFile.write(str(buildingData).replace("'", '"').replace("True", "true").replace("False", "false"))
             buildingDataFile.close()

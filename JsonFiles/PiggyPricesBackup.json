@@ -2,17 +2,37 @@
     {
         "Id": 1,
         "Name": "Farm",
-        "Price": 100,
+        "Price": 100.00,
         "Amount": 0,
         "MPS": 1,
-        "Upgrade1": false,
-        "Upgrade2": false,
-        "Upgrade3": false
+        "Upgrades": [
+            {
+                "Id": 1,
+                "Name": "Improved food",
+                "Multiplier": 1.5,
+                "Price": 499.99,
+                "Bought": false
+            },
+            {
+                "Id": 2,
+                "Name": "Automated feeding",
+                "Multiplier": 1.5,
+                "Price": 1000.00,
+                "Bought": false
+            },
+            {
+                "Id": 3,
+                "Name": "Imporved shelter",
+                "Multiplier": 2,
+                "Price": 2250.00,
+                "Bought": false
+            }
+        ]
     },
     {
         "Id": 2,
         "Name": "Butcher",
-        "Price": 250,
+        "Price": 250.00,
         "Amount": 0,
         "MPS": 3,
         "Upgrade1": false,
@@ -22,7 +42,7 @@
     {
         "Id": 3,
         "Name": "Shop",
-        "Price": 800,
+        "Price": 800.00,
         "Amount": 0,
         "MPS": 10,
         "Upgrade1": false,
