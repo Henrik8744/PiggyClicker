@@ -1,3 +1,5 @@
+DROP TABLE piggyData
+
 CREATE TABLE piggyData(
     Name TEXT,
     Balance REAL,
@@ -6,6 +8,6 @@ CREATE TABLE piggyData(
 )
 
 INSERT INTO piggyData
-VALUES ("Henrik", 500, 2, 6)
+VALUES ('Henrik', 500, 2, 6)
 
 SELECT * FROM piggyData
