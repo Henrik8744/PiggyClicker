@@ -4,7 +4,7 @@ import threading
 filename = "JsonFiles\PiggyPrices.json"
 balance = 0
 moneyPerClick = 1
-moneyPerSecond = 0.1
+moneyPerSecond = 0
 # oppenedFile = open(filename)
 # data = json.load(oppenedFile)
 # for i in data:
@@ -30,7 +30,9 @@ def click():
 
 def perSecond():
     global balance
+    global moneyPerSecond
     while True:
+        moneyPerSecond = ((buildingData[0]["MPS"] * buildingData[0]["Amount"]) + (buildingData[1]["MPS"] * buildingData[1]["Amount"]) + (buildingData[2]["MPS"] * buildingData[2]["Amount"]))
         balance += moneyPerSecond
         time.sleep(1)
 
@@ -54,13 +56,11 @@ def decide():
         click()
 
 def purchaseBuildings():
-        global moneyPerSecond
         print(f"${buildingData[0]["Price"]:.2f} {buildingData[0]["Name"]}: ${buildingData[0]["MPS"]:.2f}/sec (You have {buildingData[0]["Amount"]})")
         print(f"${buildingData[1]["Price"]:.2f} {buildingData[1]["Name"]}: ${buildingData[1]["MPS"]:.2f}/sec (You have {buildingData[1]["Amount"]})")
         print(f"${buildingData[2]["Price"]:.2f} {buildingData[2]["Name"]}: ${buildingData[2]["MPS"]:.2f}/sec (You have {buildingData[2]["Amount"]})")
         try:
             purchaseDecision = int(input("What would you like to buy? ").strip())
-            moneyPerSecond += buildingData[purchaseDecision - 1]["MPS"]
             buildingData[purchaseDecision - 1]["Amount"] = buildingData[purchaseDecision - 1]["Amount"] + 1
             with open(filename, 'w') as buildingDataFile:
                 buildingDataFile.write(str(buildingData).replace("'", '"').replace("True", "true").replace("False", "false"))
@@ -88,7 +88,7 @@ def purchaseBuildingUpgrades():
             try:
                 selectedBuildingUpgrade = int(input("Which upgrade do you want? "))
                 buildingData[selectedBuilding - 1]["Upgrades"][selectedBuildingUpgrade - 1]["Bought"] = True
-                buildingData[selectedBuilding - 1]["MPS"] = buildingData[selectedBuilding - 1]["MPS"] * buildingData[selectedBuilding - 1]["Upgrades"][selectedBuildingUpgrade - 1]["Multiplier"]
+                buildingData[selectedBuilding - 1]["MPS"] *= buildingData[selectedBuilding - 1]["Upgrades"][selectedBuildingUpgrade - 1]["Multiplier"]
                 with open(filename, 'w') as buildingDataFile:
                     buildingDataFile.write(str(buildingData).replace("'", '"').replace("True", "true").replace("False", "false"))
                     buildingDataFile.close()
