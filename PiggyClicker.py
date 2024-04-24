@@ -45,7 +45,7 @@ def decide():
     if decision == "1":
         click()
     elif decision == "3":
-        purchaseBuildings
+        purchaseBuildings()
     elif decision == "4":
         purchaseBuildingUpgrades()
     elif decision == "5":
@@ -58,29 +58,58 @@ def purchaseBuildings():
         print(f"${buildingData[0]["Price"]:.2f} {buildingData[0]["Name"]}: ${buildingData[0]["MPS"]:.2f}/sec (You have {buildingData[0]["Amount"]})")
         print(f"${buildingData[1]["Price"]:.2f} {buildingData[1]["Name"]}: ${buildingData[1]["MPS"]:.2f}/sec (You have {buildingData[1]["Amount"]})")
         print(f"${buildingData[2]["Price"]:.2f} {buildingData[2]["Name"]}: ${buildingData[2]["MPS"]:.2f}/sec (You have {buildingData[2]["Amount"]})")
-        purchaseDecision = int(input("What would you like to buy? ").strip())
-        moneyPerSecond += buildingData[purchaseDecision - 1]["MPS"]
-        buildingData[purchaseDecision - 1]["Amount"] = buildingData[purchaseDecision - 1]["Amount"] + 1
-        with open(filename, 'w') as buildingDataFile:
-            buildingDataFile.write(str(buildingData).replace("'", '"').replace("True", "true").replace("False", "false"))
-            buildingDataFile.close()
-            decide()
+        try:
+            purchaseDecision = int(input("What would you like to buy? ").strip())
+            moneyPerSecond += buildingData[purchaseDecision - 1]["MPS"]
+            buildingData[purchaseDecision - 1]["Amount"] = buildingData[purchaseDecision - 1]["Amount"] + 1
+            with open(filename, 'w') as buildingDataFile:
+                buildingDataFile.write(str(buildingData).replace("'", '"').replace("True", "true").replace("False", "false"))
+                buildingDataFile.close()
+                decide()
+        except ValueError:
+            print("Please enter a valid number")
+            time.sleep(4)
+            purchaseBuildings()
+        except IndexError:
+            print("Please enter a valid number")
+            time.sleep(4)
+            purchaseBuildings()
+
 
 def purchaseBuildingUpgrades():
         print(buildingData[0]["Name"])
         print(buildingData[1]["Name"])
         print(buildingData[2]["Name"])
-        selectedBuilding = int(input("Which building would you like to get an upgrade for? ").strip())
-        print(f"${buildingData[selectedBuilding - 1]["Upgrades"][0]["Price"]:.2f} {buildingData[selectedBuilding - 1]["Upgrades"][0]["Name"]}")
-        print(f"${buildingData[selectedBuilding - 1]["Upgrades"][1]["Price"]:.2f} {buildingData[selectedBuilding - 1]["Upgrades"][1]["Name"]}")
-        print(f"${buildingData[selectedBuilding - 1]["Upgrades"][2]["Price"]:.2f} {buildingData[selectedBuilding - 1]["Upgrades"][2]["Name"]}")
-        selectedBuildingUpgrade = int(input("Which upgrade do you want? "))
-        buildingData[selectedBuilding - 1]["Upgrades"][selectedBuildingUpgrade - 1]["Bought"] = True
-        buildingData[selectedBuilding - 1]["MPS"] = buildingData[selectedBuilding - 1]["MPS"] * buildingData[selectedBuilding - 1]["Upgrades"][selectedBuildingUpgrade - 1]["Multiplier"]
-        with open(filename, 'w') as buildingDataFile:
-            buildingDataFile.write(str(buildingData).replace("'", '"').replace("True", "true").replace("False", "false"))
-            buildingDataFile.close()
-            decide()
+        try:
+            selectedBuilding = int(input("Which building would you like to get an upgrade for? ").strip())
+            print(f"${buildingData[selectedBuilding - 1]["Upgrades"][0]["Price"]:.2f} {buildingData[selectedBuilding - 1]["Upgrades"][0]["Name"]}")
+            print(f"${buildingData[selectedBuilding - 1]["Upgrades"][1]["Price"]:.2f} {buildingData[selectedBuilding - 1]["Upgrades"][1]["Name"]}")
+            print(f"${buildingData[selectedBuilding - 1]["Upgrades"][2]["Price"]:.2f} {buildingData[selectedBuilding - 1]["Upgrades"][2]["Name"]}")
+            try:
+                selectedBuildingUpgrade = int(input("Which upgrade do you want? "))
+                buildingData[selectedBuilding - 1]["Upgrades"][selectedBuildingUpgrade - 1]["Bought"] = True
+                buildingData[selectedBuilding - 1]["MPS"] = buildingData[selectedBuilding - 1]["MPS"] * buildingData[selectedBuilding - 1]["Upgrades"][selectedBuildingUpgrade - 1]["Multiplier"]
+                with open(filename, 'w') as buildingDataFile:
+                    buildingDataFile.write(str(buildingData).replace("'", '"').replace("True", "true").replace("False", "false"))
+                    buildingDataFile.close()
+                    decide()
+            except ValueError:
+                print("Please enter a valid number")
+                time.sleep(4)
+                purchaseBuildingUpgrades()
+            except IndexError:
+                print("Please enter a valid number")
+                time.sleep(4)
+                purchaseBuildingUpgrades()
+        except ValueError:
+            print("Please enter a valid number")
+            time.sleep(4)
+            purchaseBuildingUpgrades()
+        except IndexError:
+            print("Please enter a valid number")
+            time.sleep(4)
+            purchaseBuildingUpgrades()
+             
  
 def checkStats():
         print(f"You have ${balance:.2f}!")
