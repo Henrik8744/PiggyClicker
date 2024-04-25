@@ -17,12 +17,6 @@ def getFile():
 
 buildingData = getFile()
 
-def click():
-    global balance
-    global moneyPerClick
-    balance += moneyPerClick
-    decide()
-
 def perSecond():
     global balance
     global moneyPerSecond
@@ -49,6 +43,13 @@ def decide():
          checkStats()
     else:
         click()
+
+def click():
+    global balance
+    global moneyPerClick
+    balance += moneyPerClick
+    decide()
+
 
 def purchaseBuildings():
         print(f"${buildingData[0]["Price"]:.2f} {buildingData[0]["Name"]}: ${buildingData[0]["MPS"]:.2f}/sec (You have {buildingData[0]["Amount"]})")
