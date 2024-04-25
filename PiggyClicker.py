@@ -8,6 +8,7 @@ playerFilename = "JsonFiles\PlayerData.json"
 balance = 0
 moneyPerClick = 1
 moneyPerSecond = 0
+playerInData = None
 
 sys.setrecursionlimit(999999999)
 
@@ -32,7 +33,7 @@ def menu():
         password = input("What is the password? ")
         for i in range(0, len(playerData)):
             if playerData[i]["Username"] == username and playerData[i]["Password"] == password:
-                loadSave(i)
+                load(i)
     elif hasAccount == "No" or hasAccount == "no" or hasAccount == "n":
         makeAccount = input("Would you like to make an account? ")
         if makeAccount == "Yes" or makeAccount == "yes" or makeAccount == "y":
@@ -52,13 +53,25 @@ def menu():
                 playerDataFile.close()
             decide()
 
-def loadSave(i):
+def load(i):
     global balance
     global moneyPerClick
     global moneyPerSecond
+    global playerInData
+    playerInData = i
     balance = playerData[i]["Balance"]
     moneyPerClick = playerData[i]["MPC"]
     moneyPerSecond = playerData[i]["MPS"]
+
+def save(decision):
+    playerData[playerInData]["Balance"] = balance
+    playerData[playerInData]["MPC"] = moneyPerClick
+    playerData[playerInData]["MPS"] = moneyPerSecond
+    with open(playerFilename, 'w') as playerDataFile:
+        playerDataFile.write(str(playerData).replace("'", '"').replace("True", "true").replace("False", "false"))
+        playerDataFile.close()
+        if decision == "quit":
+            pass
 
 def perSecond():
     global balance
