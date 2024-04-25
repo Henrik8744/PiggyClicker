@@ -26,6 +26,14 @@ buildingData = getFile(buildingFilename)
 clickerData = getFile(clickerFilename)
 playerData = getFile(playerFilename)
 
+def startThreads():
+    perSecondThread = threading.Thread(target = perSecond)
+    decideThread = threading.Thread(target = decide)
+    perThreeMinutesThread = threading.Thread(target = perThreeMinutes)
+    decideThread.start()
+    perSecondThread.start()
+    perThreeMinutesThread.start()
+
 def menu():
     hasAccount = input("Do you have an account already? ")
     if hasAccount == "Yes" or hasAccount == "yes" or hasAccount == "y":
@@ -34,6 +42,9 @@ def menu():
         for i in range(0, len(playerData)):
             if playerData[i]["Username"] == username and playerData[i]["Password"] == password:
                 load(i)
+            else: 
+                print("Incorrect password or username")
+                menu()
     elif hasAccount == "No" or hasAccount == "no" or hasAccount == "n":
         makeAccount = input("Would you like to make an account? ")
         if makeAccount == "Yes" or makeAccount == "yes" or makeAccount == "y":
@@ -51,7 +62,13 @@ def menu():
             with open(playerFilename, 'w') as playerDataFile:
                 playerDataFile.write(str(playerData).replace("'", '"').replace("True", "true").replace("False", "false"))
                 playerDataFile.close()
-            decide()
+                startThreads()
+        else:
+            startThreads()
+    else:
+        print("Please enter yes or no")
+        time.sleep(2)
+        menu()
 
 def load(i):
     global balance
@@ -62,16 +79,27 @@ def load(i):
     balance = playerData[i]["Balance"]
     moneyPerClick = playerData[i]["MPC"]
     moneyPerSecond = playerData[i]["MPS"]
+    startThreads()
 
 def save(decision):
-    playerData[playerInData]["Balance"] = balance
-    playerData[playerInData]["MPC"] = moneyPerClick
-    playerData[playerInData]["MPS"] = moneyPerSecond
-    with open(playerFilename, 'w') as playerDataFile:
-        playerDataFile.write(str(playerData).replace("'", '"').replace("True", "true").replace("False", "false"))
-        playerDataFile.close()
+    if playerInData != None:
+        playerData[playerInData]["Balance"] = balance
+        playerData[playerInData]["MPC"] = moneyPerClick
+        playerData[playerInData]["MPS"] = moneyPerSecond
+        with open(playerFilename, 'w') as playerDataFile:
+            playerDataFile.write(str(playerData).replace("'", '"').replace("True", "true").replace("False", "false"))
+            playerDataFile.close()
+            if decision == "quit":
+                print("Game saved!")
+                exit()
+            else:
+                print("Game saved!")
+                time.sleep(1)
+                decide()
+    else:
         if decision == "quit":
-            pass
+            print("Sorry you don't have an account, the game will not save")
+            exit()
 
 def perSecond():
     global balance
@@ -81,12 +109,18 @@ def perSecond():
         balance += moneyPerSecond
         time.sleep(1)
 
+def perThreeMinutes():
+    while True:
+        time.sleep(180)
+        save("Don't quit")
+
 def decide():
     print("Type 1 to click")
     print("Type 2 to buy clicker upgrades")
     print("Type 3 for buildings")
     print("Type 4 for building upgrades")
     print("Type 5 see your stats")
+    print("Type 6 to save and quit")
     print(f"You have ${balance:.2f}")
     decision = input("What would you like to do? ").strip()
     if decision == "1":
@@ -98,7 +132,9 @@ def decide():
     elif decision == "4":
         purchaseBuildingUpgrades()
     elif decision == "5":
-         checkStats()
+        checkStats()
+    elif decision == "6":
+        save("quit")
     else:
         click()
 
@@ -111,7 +147,7 @@ def click():
 def purchaseClickerUpgrades():
     global moneyPerClick
     for i in range(0, len(clickerData)):
-        print(f"${clickerData[i]["Price"]} {clickerData[i]["Name"]} ${clickerData[i]["MPC"]}/sec")
+        print(f"${clickerData[i]["Price"]} {clickerData[i]["Name"]} ${clickerData[i]["MPC"]}/sec (type {i + 1} to purchase)")
     try:
         purchaseDecision = int(input("What would you like to buy? ").strip())
         clickerData[purchaseDecision - 1]["Bought"] = True
@@ -120,7 +156,7 @@ def purchaseClickerUpgrades():
             clickerDataFile.write(str(clickerData).replace("'", '"').replace("True", "true").replace("False", "false"))
             clickerDataFile.close()
             print("Purchase complete!")
-            time.sleep(1.5)
+            time.sleep(1)
             decide()
     except ValueError:
         print("Please enter a valid number")
@@ -192,9 +228,3 @@ def checkStats():
         decide()
 
 menu()
-
-perSecondThread = threading.Thread(target = perSecond)
-decideThread = threading.Thread(target = decide)
-
-perSecondThread.start()
-decideThread.start()
