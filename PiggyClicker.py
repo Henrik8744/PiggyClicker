@@ -30,17 +30,35 @@ def menu():
     if hasAccount == "Yes" or hasAccount == "yes" or hasAccount == "y":
         username = input("What is the username? ")
         password = input("What is the password? ")
-        for i in playerData:
-            if playerData[i]["Name"] == username and playerData[i]["Password"] == password:
+        for i in range(0, len(playerData)):
+            if playerData[i]["Username"] == username and playerData[i]["Password"] == password:
                 loadSave(i)
+    elif hasAccount == "No" or hasAccount == "no" or hasAccount == "n":
+        makeAccount = input("Would you like to make an account? ")
+        if makeAccount == "Yes" or makeAccount == "yes" or makeAccount == "y":
+            # playerData[0]["Accounts"] = playerData[0]["Accounts"].append({})
+            # Create a new JSON dict with the username and password
+            username = input("What is the username? ")
+            password = input("What is the password? ")
+            playerData.append({
+                "Username": username,
+                "Password": password,
+                "Balance": 0,
+                "MPS": 0,
+                "MPC": 0
+            })
+            with open(playerFilename, 'w') as playerDataFile:
+                playerDataFile.write(str(playerData).replace("'", '"').replace("True", "true").replace("False", "false"))
+                playerDataFile.close()
+            decide()
 
 def loadSave(i):
     global balance
     global moneyPerClick
     global moneyPerSecond
-    balance == playerData[i]["Balance"]
-    moneyPerClick == playerData[i]["MPC"]
-    moneyPerSecond == playerData[i]["MPS"]
+    balance = playerData[i]["Balance"]
+    moneyPerClick = playerData[i]["MPC"]
+    moneyPerSecond = playerData[i]["MPS"]
 
 def perSecond():
     global balance
