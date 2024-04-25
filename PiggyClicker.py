@@ -4,6 +4,7 @@ import threading
 import sys
 buildingFilename = "JsonFiles\PiggyPrices.json"
 clickerFilename = "JsonFiles\ClickerUpgrades.json"
+playerFilename = "JsonFiles\PlayerData.json"
 balance = 0
 moneyPerClick = 1
 moneyPerSecond = 0
@@ -22,15 +23,24 @@ def getFile(filename):
 
 buildingData = getFile(buildingFilename)
 clickerData = getFile(clickerFilename)
+playerData = getFile(playerFilename)
 
 def menu():
-    global balance
-    global moneyPerClick
-    global moneyPerSecond
     hasAccount = input("Do you have an account already? ")
     if hasAccount == "Yes" or hasAccount == "yes" or hasAccount == "y":
         username = input("What is the username? ")
         password = input("What is the password? ")
+        for i in playerData:
+            if playerData[i]["Name"] == username and playerData[i]["Password"] == password:
+                loadSave(i)
+
+def loadSave(i):
+    global balance
+    global moneyPerClick
+    global moneyPerSecond
+    balance == playerData[i]["Balance"]
+    moneyPerClick == playerData[i]["MPC"]
+    moneyPerSecond == playerData[i]["MPS"]
 
 def perSecond():
     global balance
@@ -69,12 +79,8 @@ def click():
 
 def purchaseClickerUpgrades():
     global moneyPerClick
-    print(f"${clickerData[0]["Price"]} {clickerData[0]["Name"]} ${clickerData[0]["MPC"]}/sec")
-    print(f"${clickerData[1]["Price"]} {clickerData[1]["Name"]} ${clickerData[1]["MPC"]}/sec")
-    print(f"${clickerData[2]["Price"]} {clickerData[2]["Name"]} ${clickerData[2]["MPC"]}/sec")
-    print(f"${clickerData[3]["Price"]} {clickerData[3]["Name"]} ${clickerData[3]["MPC"]}/sec")
-    print(f"${clickerData[4]["Price"]} {clickerData[4]["Name"]} ${clickerData[4]["MPC"]}/sec")
-    print(f"${clickerData[5]["Price"]} {clickerData[5]["Name"]} ${clickerData[5]["MPC"]}/sec")
+    for i in range(0, len(clickerData)):
+        print(f"${clickerData[i]["Price"]} {clickerData[i]["Name"]} ${clickerData[i]["MPC"]}/sec")
     try:
         purchaseDecision = int(input("What would you like to buy? ").strip())
         clickerData[purchaseDecision - 1]["Bought"] = True
@@ -95,9 +101,8 @@ def purchaseClickerUpgrades():
         purchaseClickerUpgrades()
 
 def purchaseBuildings():
-        print(f"${buildingData[0]["Price"]:.2f} {buildingData[0]["Name"]}: ${buildingData[0]["MPS"]:.2f}/sec (You have {buildingData[0]["Amount"]})")
-        print(f"${buildingData[1]["Price"]:.2f} {buildingData[1]["Name"]}: ${buildingData[1]["MPS"]:.2f}/sec (You have {buildingData[1]["Amount"]})")
-        print(f"${buildingData[2]["Price"]:.2f} {buildingData[2]["Name"]}: ${buildingData[2]["MPS"]:.2f}/sec (You have {buildingData[2]["Amount"]})")
+        for i in range(0, len(buildingData)):
+            print(f"${buildingData[i]["Price"]:.2f} {buildingData[i]["Name"]}: ${buildingData[i]["MPS"]:.2f}/sec (You have {buildingData[i]["Amount"]})")
         try:
             purchaseDecision = int(input("What would you like to buy? ").strip())
             buildingData[purchaseDecision - 1]["Amount"] = buildingData[purchaseDecision - 1]["Amount"] + 1
@@ -116,14 +121,12 @@ def purchaseBuildings():
 
 
 def purchaseBuildingUpgrades():
-        print(buildingData[0]["Name"])
-        print(buildingData[1]["Name"])
-        print(buildingData[2]["Name"])
+        for i in range(0, len(buildingData)):
+            print(buildingData[i]["Name"])
         try:
             selectedBuilding = int(input("Which building would you like to get an upgrade for? ").strip())
-            print(f"${buildingData[selectedBuilding - 1]["Upgrades"][0]["Price"]:.2f} {buildingData[selectedBuilding - 1]["Upgrades"][0]["Name"]}")
-            print(f"${buildingData[selectedBuilding - 1]["Upgrades"][1]["Price"]:.2f} {buildingData[selectedBuilding - 1]["Upgrades"][1]["Name"]}")
-            print(f"${buildingData[selectedBuilding - 1]["Upgrades"][2]["Price"]:.2f} {buildingData[selectedBuilding - 1]["Upgrades"][2]["Name"]}")
+            for i in range(0, len(buildingData[selectedBuilding - 1]["Upgrades"])):
+                print(f"${buildingData[selectedBuilding - 1]["Upgrades"][i]["Price"]:.2f} {buildingData[selectedBuilding - 1]["Upgrades"][i]["Name"]}")
             try:
                 selectedBuildingUpgrade = int(input("Which upgrade do you want? "))
                 buildingData[selectedBuilding - 1]["Upgrades"][selectedBuildingUpgrade - 1]["Bought"] = True
