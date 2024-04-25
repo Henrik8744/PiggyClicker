@@ -5,10 +5,6 @@ filename = "JsonFiles\PiggyPrices.json"
 balance = 0
 moneyPerClick = 1
 moneyPerSecond = 0
-# oppenedFile = open(filename)
-# data = json.load(oppenedFile)
-# for i in data:
-#     print(i)
 def getFile():
     try:
         with open(filename, 'r') as f:
@@ -20,7 +16,6 @@ def getFile():
         print(f"Error: Invalid JSON format in file {filename}.")
 
 buildingData = getFile()
-# buidlingUpgradesData = getFile("JsonFiles\PiggyBuildingUpgrades.json")
 
 def click():
     global balance
