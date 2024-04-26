@@ -5,6 +5,7 @@ import sys
 buildingFilename = "JsonFiles\PiggyPrices.json"
 clickerFilename = "JsonFiles\ClickerUpgrades.json"
 playerFilename = "JsonFiles\PlayerData.json"
+guestFilename = "JsonFiles\GuestData.json"
 balance = 0
 moneyPerClick = 1
 moneyPerSecond = 0
@@ -25,6 +26,7 @@ def getFile(filename):
 buildingData = getFile(buildingFilename)
 clickerData = getFile(clickerFilename)
 playerData = getFile(playerFilename)
+guestData = getFile(guestFilename)
 
 def startThreads():
     perSecondThread = threading.Thread(target = perSecond)
@@ -62,21 +64,27 @@ def menu():
                 playerDataFile.close()
                 startThreads()
         else:
-            startThreads()
+            print("Well that's too bad make one")
+            time.sleep(2)
+            menu()
     else:
         print("Please enter yes or no")
         time.sleep(2)
         menu()
 
-def load(i):
+def load(player):
     global balance
     global moneyPerClick
     global moneyPerSecond
     global playerInData
-    playerInData = i
-    balance = playerData[i]["Balance"]
-    moneyPerClick = playerData[i]["MPC"]
-    moneyPerSecond = playerData[i]["MPS"]
+    playerInData = player
+    balance = playerData[playerInData]["Balance"]
+    moneyPerClick = playerData[playerInData]["MPC"]
+    moneyPerSecond = playerData[playerInData]["MPS"]
+    # for building in playerData[playerInData]["Buildings"]:
+    #     for upgrade in building["Upgrades"]:
+    #         if upgrade["Bought"] == True:
+    #             buildingData[building]["Upgrades"][upgrade]["Multiplier"]
     startThreads()
 
 def save(decision):
@@ -148,13 +156,17 @@ def purchaseClickerUpgrades():
         print(f"${clickerData[i]["Price"]} {clickerData[i]["Name"]} ${clickerData[i]["MPC"]}/sec (type {i + 1} to purchase)")
     try:
         purchaseDecision = int(input("What would you like to buy? ").strip())
-        playerData[playerInData]["ClickerUpgrades"][purchaseDecision - 1]["Bought"] = True
-        moneyPerClick += clickerData[purchaseDecision - 1]["MPC"]
-        with open(playerFilename, 'w') as playerDataFile:
-            playerDataFile.write(str(playerData).replace("'", '"').replace("True", "true").replace("False", "false"))
-            playerDataFile.close()
-            print("Purchase complete!")
-            time.sleep(1)
+        if playerInData != None:
+            playerData[playerInData]["ClickerUpgrades"][purchaseDecision - 1]["Bought"] = True
+            moneyPerClick += clickerData[purchaseDecision - 1]["MPC"]
+            with open(playerFilename, 'w') as playerDataFile:
+                playerDataFile.write(str(playerData).replace("'", '"').replace("True", "true").replace("False", "false"))
+                playerDataFile.close()
+                print("Purchase complete!")
+                time.sleep(1)
+                decide()
+        else:
+            moneyPerClick += clickerData[purchaseDecision - 1]["MPC"]
             decide()
     except ValueError:
         print("Please enter a valid number")
@@ -171,10 +183,13 @@ def purchaseBuildings():
         try:
             purchaseDecision = int(input("What would you like to buy? ").strip())
             numberOfPurchased = int(input("How many would you like to buy? ").strip())
-            playerData[playerInData]["Buildings"][purchaseDecision - 1]["Amount"] = playerData[playerInData]["Buildings"][purchaseDecision - 1]["Amount"] + numberOfPurchased
-            with open(playerFilename, 'w') as playerDataFile:
-                playerDataFile.write(str(playerData).replace("'", '"').replace("True", "true").replace("False", "false"))
-                playerDataFile.close()
+            if playerInData != None:
+                playerData[playerInData]["Buildings"][purchaseDecision - 1]["Amount"] = playerData[playerInData]["Buildings"][purchaseDecision - 1]["Amount"] + numberOfPurchased
+                with open(playerFilename, 'w') as playerDataFile:
+                    playerDataFile.write(str(playerData).replace("'", '"').replace("True", "true").replace("False", "false"))
+                    playerDataFile.close()
+                    decide()
+            else:
                 decide()
         except ValueError:
             print("Please enter a valid number")
@@ -185,7 +200,6 @@ def purchaseBuildings():
             time.sleep(4)
             purchaseBuildings()
 
-
 def purchaseBuildingUpgrades():
         for i in range(0, len(buildingData)):
             print(buildingData[i]["Name"])
@@ -195,12 +209,25 @@ def purchaseBuildingUpgrades():
                 print(f"${buildingData[selectedBuilding - 1]["Upgrades"][i]["Price"]:.2f} {buildingData[selectedBuilding - 1]["Upgrades"][i]["Name"]}")
             try:
                 selectedBuildingUpgrade = int(input("Which upgrade do you want? "))
-                playerData[playerInData]["Buildings"][selectedBuilding - 1]["Upgrades"][selectedBuildingUpgrade - 1]["Bought"] = True
-                buildingData[selectedBuilding - 1]["MPS"] *= buildingData[selectedBuilding - 1]["Upgrades"][selectedBuildingUpgrade - 1]["Multiplier"]
-                with open(playerFilename, 'w') as playerDataFile:
-                    playerDataFile.write(str(playerData).replace("'", '"').replace("True", "true").replace("False", "false"))
-                    playerDataFile.close()
-                    decide()
+                if playerInData != None:
+                    if playerData[playerInData]["Buildings"][selectedBuilding - 1]["Upgrades"][selectedBuildingUpgrade - 1]["Bought"] == False:
+                        playerData[playerInData]["Buildings"][selectedBuilding - 1]["Upgrades"][selectedBuildingUpgrade - 1]["Bought"] = True
+                        buildingData[selectedBuilding - 1]["MPS"] *= buildingData[selectedBuilding - 1]["Upgrades"][selectedBuildingUpgrade - 1]["Multiplier"]
+                        with open(playerFilename, 'w') as playerDataFile:
+                            playerDataFile.write(str(playerData).replace("'", '"').replace("True", "true").replace("False", "false"))
+                            playerDataFile.close()
+                            decide()
+                    else:
+                        print("Sorry you already bought this!")
+                        time.sleep(1.5)
+                        decide()
+                # else:
+                #     guestData[0]["Buildings"][selectedBuilding - 1]["Upgrades"][selectedBuildingUpgrade - 1]["Bought"] = True
+                #     buildingData[selectedBuilding - 1]["MPS"] *= buildingData[selectedBuilding - 1]["Upgrades"][selectedBuildingUpgrade - 1]["Multiplier"]
+                #     with open(guestFilename, 'w') as guestDataFile:
+                #         guestDataFile.write(str(guestData).replace("'", '"').replace("True", "true").replace("False", "false"))
+                #         guestDataFile.close()
+                #         decide()
             except ValueError:
                 print("Please enter a valid number")
                 time.sleep(4)
@@ -216,8 +243,7 @@ def purchaseBuildingUpgrades():
         except IndexError:
             print("Please enter a valid number")
             time.sleep(4)
-            purchaseBuildingUpgrades()
-             
+            purchaseBuildingUpgrades()         
  
 def checkStats():
         print(f"You have ${balance:.2f}!")
