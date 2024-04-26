@@ -1,9 +1,80 @@
 [
     {
-        "Username": "Skylar Z",
-        "Password": "pssword",
-        "Balance": 1145926.00,
-        "MPC": 352.00,
-        "MPS": 0.00
+        "Username": "",
+        "Password": "",
+        "Balance": 0.00,
+        "MPC": 0.00,
+        "MPS": 0.00,
+        "ClickerUpgrades":
+        [
+            {
+                "Id": 1,
+                "Bought": false
+            },
+            {
+                "Id": 2,
+                "Bought": false
+            },
+            {
+                "Id": 3,
+                "Bought": false
+            },
+            {
+                "Id": 4,
+                "Bought": false
+            },
+            {
+                "Id": 5,
+                "Bought": false
+            },
+            {
+                "Id": 6,
+                "Bought": false
+            }
+        ],
+        "Buildings": 
+        [
+            {
+                "Name": "Farm",
+                "Amount": 0,
+                "Upgrades": 
+                [
+                    {
+                        "Id": 1,
+                        "Bought": false
+                    },
+                    {
+                        "Id": 2,
+                        "Bought": false
+                    },
+                    {
+                        "Id": 3,
+                        "Bought": false
+                    }
+                ]
+            },
+            {
+                "Name": "Butcher",
+                "Amount": 7,
+                "Upgrades":
+                [
+                    {
+                        "Id": 1,
+                        "Bought": false
+                    }
+                ]
+            },
+            {
+                "Name": "Shop",
+                "Amount": 2,
+                "Upgrades":
+                [
+                    {
+                        "Id": 1,
+                        "Bought": false
+                    }
+                ]
+            }
+        ]
     }
 ]
