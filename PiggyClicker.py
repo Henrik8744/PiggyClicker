@@ -31,10 +31,8 @@ guestData = getFile(guestFilename)
 def startThreads():
     perSecondThread = threading.Thread(target = perSecond)
     decideThread = threading.Thread(target = decide)
-    perThreeMinutesThread = threading.Thread(target = perThreeMinutes)
     decideThread.start()
     perSecondThread.start()
-    perThreeMinutesThread.start()
 
 def menu():
     hasAccount = input("Do you have an account already? ")
@@ -115,11 +113,6 @@ def perSecond():
         balance += moneyPerSecond
         time.sleep(1)
 
-def perThreeMinutes():
-    while True:
-        time.sleep(180)
-        save("Don't quit")
-
 def decide():
     print("Type 1 to click")
     print("Type 2 to buy clicker upgrades")
@@ -157,13 +150,18 @@ def purchaseClickerUpgrades():
     try:
         purchaseDecision = int(input("What would you like to buy? ").strip())
         if playerInData != None:
-            playerData[playerInData]["ClickerUpgrades"][purchaseDecision - 1]["Bought"] = True
-            moneyPerClick += clickerData[purchaseDecision - 1]["MPC"]
-            with open(playerFilename, 'w') as playerDataFile:
-                playerDataFile.write(str(playerData).replace("'", '"').replace("True", "true").replace("False", "false"))
-                playerDataFile.close()
-                print("Purchase complete!")
-                time.sleep(1)
+            if playerData[playerInData]["ClickerUpgrades"][purchaseDecision - 1]["Bought"] == False:
+                playerData[playerInData]["ClickerUpgrades"][purchaseDecision - 1]["Bought"] = True
+                moneyPerClick += clickerData[purchaseDecision - 1]["MPC"]
+                with open(playerFilename, 'w') as playerDataFile:
+                    playerDataFile.write(str(playerData).replace("'", '"').replace("True", "true").replace("False", "false"))
+                    playerDataFile.close()
+                    print("Purchase complete!")
+                    time.sleep(1)
+                    decide()
+            else:
+                print("Sorry you already bought this!")
+                time.sleep(1.5)
                 decide()
         else:
             moneyPerClick += clickerData[purchaseDecision - 1]["MPC"]
