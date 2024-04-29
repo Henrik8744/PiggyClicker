@@ -1,9 +1,7 @@
 [
     {
-        "Username": "",
-        "Password": "",
         "Balance": 0.00,
-        "MPC": 0.00,
+        "MPC": 1.00,
         "MPS": 0.00,
         "ClickerUpgrades":
         [
@@ -55,7 +53,7 @@
             },
             {
                 "Name": "Butcher",
-                "Amount": 7,
+                "Amount": 0,
                 "Upgrades":
                 [
                     {
@@ -66,7 +64,7 @@
             },
             {
                 "Name": "Shop",
-                "Amount": 2,
+                "Amount": 0,
                 "Upgrades":
                 [
                     {

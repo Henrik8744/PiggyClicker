@@ -32,6 +32,7 @@ guestData = getFile(guestFilename)
 
 class Menu:
     def menu():
+        global guestData
         global playerInData
         hasAccount = input("Do you have an account already? ")
         if hasAccount == "Yes" or hasAccount == "yes" or hasAccount == "y":
@@ -39,7 +40,7 @@ class Menu:
             password = input("What is the password? ")
             for i in range(0, len(playerData)):
                 if playerData[i]["Username"] == username and playerData[i]["Password"] == password:
-                    Menu.load(i)
+                    Menu.load(i, "Normal")
                 else: 
                     print("Incorrect password or username")
                     Menu.menu()
@@ -134,28 +135,106 @@ class Menu:
                     playerDataFile.close()
                     NormalMode.startThreads()
             else:
-                print("Well that's too bad make one")
+                print("Created guest account, you will not be able to save your progress.")
+                guestData = [
+    {
+        "Balance": 0.00,
+        "MPC": 1.00,
+        "MPS": 0.00,
+        "ClickerUpgrades":
+        [
+            {
+                "Id": 1,
+                "Bought": False
+            },
+            {
+                "Id": 2,
+                "Bought": False
+            },
+            {
+                "Id": 3,
+                "Bought": False
+            },
+            {
+                "Id": 4,
+                "Bought": False
+            },
+            {
+                "Id": 5,
+                "Bought": False
+            },
+            {
+                "Id": 6,
+                "Bought": False
+            }
+        ],
+        "Buildings": 
+        [
+            {
+                "Name": "Farm",
+                "Amount": 0,
+                "Upgrades": 
+                [
+                    {
+                        "Id": 1,
+                        "Bought": False
+                    },
+                    {
+                        "Id": 2,
+                        "Bought": False
+                    },
+                    {
+                        "Id": 3,
+                        "Bought": False
+                    }
+                ]
+            },
+            {
+                "Name": "Butcher",
+                "Amount": 0,
+                "Upgrades":
+                [
+                    {
+                        "Id": 1,
+                        "Bought": False
+                    }
+                ]
+            },
+            {
+                "Name": "Shop",
+                "Amount": 0,
+                "Upgrades":
+                [
+                    {
+                        "Id": 1,
+                        "Bought": False
+                    }
+                ]
+            }
+        ]
+    }
+]
+                with open(guestFilename, 'w') as guestDataFile:
+                    guestDataFile.write(str(guestData).replace("'", '"').replace("True", "true").replace("False", "false"))
+                    guestDataFile.close()
                 time.sleep(2)
-                Menu.menu()
+                GuestMode.startThreads()
         else:
             print("Please enter yes or no")
             time.sleep(2)
             Menu.menu()
 
-    def load(player):
+    def load(player, mode):
         global balance
         global moneyPerClick
         global moneyPerSecond
         global playerInData
-        playerInData = player
-        balance = playerData[playerInData]["Balance"]
-        moneyPerClick = playerData[playerInData]["MPC"]
-        moneyPerSecond = playerData[playerInData]["MPS"]
-        # for building in playerData[playerInData]["Buildings"]:
-        #     for upgrade in building["Upgrades"]:
-        #         if upgrade["Bought"] == True:
-        #             buildingData[building]["Upgrades"][upgrade]["Multiplier"]
-        NormalMode.startThreads()
+        if mode == "Normal":
+            playerInData = player
+            balance = playerData[playerInData]["Balance"]
+            moneyPerClick = playerData[playerInData]["MPC"]
+            moneyPerSecond = playerData[playerInData]["MPS"]
+            NormalMode.startThreads()
 
 class NormalMode:
     def startThreads():
@@ -232,6 +311,7 @@ class NormalMode:
                 if playerData[playerInData]["ClickerUpgrades"][purchaseDecision - 1]["Bought"] == False:
                     playerData[playerInData]["ClickerUpgrades"][purchaseDecision - 1]["Bought"] = True
                     moneyPerClick += clickerData[purchaseDecision - 1]["MPC"]
+                    playerData[playerInData]["MPC"] = moneyPerClick
                     with open(playerFilename, 'w') as playerDataFile:
                         playerDataFile.write(str(playerData).replace("'", '"').replace("True", "true").replace("False", "false"))
                         playerDataFile.close()
@@ -328,5 +408,141 @@ class NormalMode:
             print(f"You make ${moneyPerSecond:.2f} every second!")
             time.sleep(6)
             NormalMode.decide()
+
+class GuestMode:
+    def startThreads():
+        perSecondThread = threading.Thread(target = GuestMode.perSecond)
+        decideThread = threading.Thread(target = GuestMode.decide)
+        decideThread.start()
+        perSecondThread.start()
+
+    def perSecond():
+        global balance
+        global moneyPerSecond
+        while True:
+            moneyPerSecond = ((buildingData[0]["MPS"] * guestData[-1]["Buildings"][0]["Amount"]) + (buildingData[1]["MPS"] * guestData[-1]["Buildings"][1]["Amount"]) + (buildingData[2]["MPS"] * guestData[-1]["Buildings"][2]["Amount"]))
+            balance += moneyPerSecond
+            time.sleep(1)
+
+    def decide():
+        print("Type 1 to click")
+        print("Type 2 to buy clicker upgrades")
+        print("Type 3 for buildings")
+        print("Type 4 for building upgrades")
+        print("Type 5 see your stats")
+        print("Type 6 to quit")
+        print(f"You have ${balance:.2f}")
+        decision = input("What would you like to do? ").strip()
+        if decision == "1":
+            GuestMode.click()
+        elif decision == "2":
+            GuestMode.purchaseClickerUpgrades()
+        elif decision == "3":
+            GuestMode.purchaseBuildings()
+        elif decision == "4":
+            GuestMode.purchaseBuildingUpgrades()
+        elif decision == "5":
+            GuestMode.checkStats()
+        elif decision == "6":
+            exit()
+        else:
+            GuestMode.click()
+
+    def click():
+        global balance
+        global moneyPerClick
+        balance += moneyPerClick
+        GuestMode.decide()
+
+    def purchaseClickerUpgrades():
+        global moneyPerClick
+        for i in range(0, len(clickerData)):
+            print(f"${clickerData[i]["Price"]} {clickerData[i]["Name"]} ${clickerData[i]["MPC"]}/sec (type {i + 1} to purchase)")
+        try:
+            purchaseDecision = int(input("What would you like to buy? ").strip())
+            if guestData[-1]["ClickerUpgrades"][purchaseDecision - 1]["Bought"] == False:
+                guestData[-1]["ClickerUpgrades"][purchaseDecision - 1]["Bought"] = True
+                moneyPerClick += clickerData[purchaseDecision - 1]["MPC"]
+                guestData[-1]["MPC"] = moneyPerClick
+                with open(guestFilename, 'w') as guestDataFile:
+                    guestDataFile.write(str(guestData).replace("'", '"').replace("True", "true").replace("False", "false"))
+                    guestDataFile.close()
+                    GuestMode.decide()
+            else:
+                print("Sorry you already bought this!")
+                time.sleep(1.5)
+                GuestMode.decide()
+        except ValueError:
+            print("Please enter a valid number")
+            time.sleep(4)
+            GuestMode.purchaseClickerUpgrades()
+        except IndexError:
+            print("Please enter a valid number")
+            time.sleep(4)
+            GuestMode.purchaseClickerUpgrades()
+
+    def purchaseBuildings():
+            for i in range(0, len(buildingData)):
+                print(f"${buildingData[i]["Price"]:.2f} {buildingData[i]["Name"]}: ${buildingData[i]["MPS"]:.2f}/sec (You have {guestData[-1]["Buildings"][i]["Amount"]})")
+            try:
+                purchaseDecision = int(input("What would you like to buy? ").strip())
+                numberOfPurchased = int(input("How many would you like to buy? ").strip())
+                guestData[-1]["Buildings"][purchaseDecision - 1]["Amount"] = guestData[-1]["Buildings"][purchaseDecision - 1]["Amount"] + numberOfPurchased
+                with open(guestFilename, 'w') as guestDataFile:
+                    guestDataFile.write(str(guestData).replace("'", '"').replace("True", "true").replace("False", "false"))
+                    guestDataFile.close()
+                    GuestMode.decide()
+            except ValueError:
+                print("Please enter a valid number")
+                time.sleep(4)
+                GuestMode.purchaseBuildings()
+            except IndexError:
+                print("Please enter a valid number")
+                time.sleep(4)
+                GuestMode.purchaseBuildings()
+
+    def purchaseBuildingUpgrades():
+            for i in range(0, len(buildingData)):
+                print(buildingData[i]["Name"])
+            try:
+                selectedBuilding = int(input("Which building would you like to get an upgrade for? ").strip())
+                for i in range(0, len(buildingData[selectedBuilding - 1]["Upgrades"])):
+                    print(f"${buildingData[selectedBuilding - 1]["Upgrades"][i]["Price"]:.2f} {buildingData[selectedBuilding - 1]["Upgrades"][i]["Name"]}")
+                try:
+                    selectedBuildingUpgrade = int(input("Which upgrade do you want? "))
+                    if guestData[-1]["Buildings"][selectedBuilding - 1]["Upgrades"][selectedBuildingUpgrade - 1]["Bought"] == False:
+                        guestData[-1]["Buildings"][selectedBuilding - 1]["Upgrades"][selectedBuildingUpgrade - 1]["Bought"] = True
+                        buildingData[selectedBuilding - 1]["MPS"] *= buildingData[selectedBuilding - 1]["Upgrades"][selectedBuildingUpgrade - 1]["Multiplier"]
+                        with open(guestFilename, 'w') as guestDataFile:
+                            guestDataFile.write(str(guestData).replace("'", '"').replace("True", "true").replace("False", "false"))
+                            guestDataFile.close()
+                            GuestMode.decide()
+                    else:
+                        print("Sorry you already bought this!")
+                        time.sleep(1.5)
+                        GuestMode.decide()
+                except ValueError:
+                    print("Please enter a valid number")
+                    time.sleep(4)
+                    GuestMode.purchaseBuildingUpgrades()
+                except IndexError:
+                    print("Please enter a valid number")
+                    time.sleep(4)
+                    GuestMode.purchaseBuildingUpgrades()
+            except ValueError:
+                print("Please enter a valid number")
+                time.sleep(4)
+                GuestMode.purchaseBuildingUpgrades()
+            except IndexError:
+                print("Please enter a valid number")
+                time.sleep(4)
+                GuestMode.purchaseBuildingUpgrades()         
+    
+    def checkStats():
+            print(f"You have ${balance:.2f}!")
+            print(f"You make ${moneyPerClick:.2f} everytime you click!")
+            print(f"You make ${moneyPerSecond:.2f} every second!")
+            time.sleep(6)
+            GuestMode.decide()
 
 Menu.menu()
