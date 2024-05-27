@@ -1,29 +1,40 @@
+# Import necessary libraries
 import json
 import time
 import threading
 import sys
-buildingFilename = "JsonFiles\PiggyPrices.json"
-clickerFilename = "JsonFiles\ClickerUpgrades.json"
-playerFilename = "JsonFiles\PlayerData.json"
-playerBackupFilename = "JsonFiles\PlayerDataBackup.json"
-guestFilename = "JsonFiles\GuestData.json"
+
+# Define file paths
+buildingFilename = "PiggyClicker\JsonFiles\PiggyPrices.json"
+clickerFilename = "PiggyClicker\JsonFiles\ClickerUpgrades.json"
+playerFilename = "PiggyClicker\JsonFiles\PlayerData.json"
+playerBackupFilename = "PiggyClicker\JsonFiles\PlayerDataBackup.json"
+guestFilename = "PiggyClicker\JsonFiles\GuestData.json"
+
+# Initialize global variables
 balance = 0
 moneyPerClick = 1
 moneyPerSecond = 0
-playerInData = None
+playerInData = None 
 
+# Set recursion limit
 sys.setrecursionlimit(999999999)
 
+# Define function to load JSON data from a file
 def getFile(filename):
     try:
+        # Open and read the file
         with open(filename, 'r') as f:
             data = json.load(f)
             return data
     except FileNotFoundError:
+        # Handle file not found error
         print(f"Error: file {filename} not found. :(")
     except json.JSONDecodeError:
+        # Handle invalid JSON format error
         print(f"Error: Invalid JSON format in file {filename}.")
 
+# Load data from files
 buildingData = getFile(buildingFilename)
 clickerData = getFile(clickerFilename)
 playerData = getFile(playerFilename)
@@ -31,24 +42,44 @@ playerDataBackup = getFile(playerBackupFilename)
 guestData = getFile(guestFilename)
 
 class Menu:
+    # Define global variables
+    global guestData
+    global playerInData
+
     def menu():
-        global guestData
-        global playerInData
-        hasAccount = input("Do you have an account already? ")
-        if hasAccount == "Yes" or hasAccount == "yes" or hasAccount == "y":
+        global playerData
+        # Ask user if they have an account
+        hasAccount = input("Do you have an account already? ").lower()
+
+        # If user has an account
+        if hasAccount in ["yes", "y"]:
             username = input("What is the username? ")
             password = input("What is the password? ")
+
+            # Check if username and password match any in the playerData
             for i in range(0, len(playerData)):
                 if playerData[i]["Username"] == username and playerData[i]["Password"] == password:
+                    # If match found, load the user data
                     Menu.load(i, "Normal")
-                else: 
-                    print("Incorrect password or username")
-                    Menu.menu()
-        elif hasAccount == "No" or hasAccount == "no" or hasAccount == "n":
-            makeAccount = input("Would you like to make an account? ")
-            if makeAccount == "Yes" or makeAccount == "yes" or makeAccount == "y":
+                    return
+                
+            print("Incorrect password or username")
+            Menu.menu()
+
+        # If user does not have an account
+        elif hasAccount in ["no", "n"]:
+            makeAccount = input("Would you like to make an account? ").lower()
+
+            # If user wants to make an account
+            if makeAccount in ["yes", "y"]:
                 username = input("What is the username? ")
                 password = input("What is the password? ")
+
+                # If playerData is None, initialize it as an empty list
+                if playerData is None:
+                    playerData = []
+
+                # Now you can safely append to playerData
                 playerData.append(
                     {
                         "Username": username,
@@ -56,169 +87,50 @@ class Menu:
                         "Balance": 0.00,
                         "MPC": 1.00,
                         "MPS": 0.00,
-                        "ClickerUpgrades":
-                        [
+                        "ClickerUpgrades": [{"Id": i, "Bought": False} for i in range(1, 7)],
+                        "Buildings": [
                             {
-                                "Id": 1,
-                                "Bought": False
-                            },
-                            {
-                                "Id": 2,
-                                "Bought": False
-                            },
-                            {
-                                "Id": 3,
-                                "Bought": False
-                            },
-                            {
-                                "Id": 4,
-                                "Bought": False
-                            },
-                            {
-                                "Id": 5,
-                                "Bought": False
-                            },
-                            {
-                                "Id": 6,
-                                "Bought": False
-                            }
-                        ],
-                        "Buildings": 
-                        [
-                            {
-                                "Name": "Farm",
+                                "Name": building,
                                 "Amount": 0,
-                                "Upgrades": 
-                                [
-                                    {
-                                        "Id": 1,
-                                        "Bought": False
-                                    },
-                                    {
-                                        "Id": 2,
-                                        "Bought": False
-                                    },
-                                    {
-                                        "Id": 3,
-                                        "Bought": False
-                                    }
-                                ]
-                            },
-                            {
-                                "Name": "Butcher",
-                                "Amount": 0,
-                                "Upgrades":
-                                [
-                                    {
-                                        "Id": 1,
-                                        "Bought": False
-                                    }
-                                ]
-                            },
-                            {
-                                "Name": "Shop",
-                                "Amount": 0,
-                                "Upgrades":
-                                [
-                                    {
-                                        "Id": 1,
-                                        "Bought": False
-                                    }
-                                ]
-                            }
+                                "Upgrades": [{"Id": i, "Bought": False} for i in range(1, 4)]
+                            } for building in ["Farm", "Butcher", "Shop"]
                         ]
                     }
                 )
+
                 playerInData = -1
+
+                # Write playerData to file
                 with open(playerFilename, 'w') as playerDataFile:
                     playerDataFile.write(str(playerData).replace("'", '"').replace("True", "true").replace("False", "false"))
-                    playerDataFile.close()
-                    NormalMode.startThreads()
+                    Menu.load(playerInData, "Normal")
+
+            # If user does not want to make an account
             else:
                 print("Created guest account, you will not be able to save your progress.")
                 guestData = [
-    {
-        "Balance": 0.00,
-        "MPC": 1.00,
-        "MPS": 0.00,
-        "ClickerUpgrades":
-        [
-            {
-                "Id": 1,
-                "Bought": False
-            },
-            {
-                "Id": 2,
-                "Bought": False
-            },
-            {
-                "Id": 3,
-                "Bought": False
-            },
-            {
-                "Id": 4,
-                "Bought": False
-            },
-            {
-                "Id": 5,
-                "Bought": False
-            },
-            {
-                "Id": 6,
-                "Bought": False
-            }
-        ],
-        "Buildings": 
-        [
-            {
-                "Name": "Farm",
-                "Amount": 0,
-                "Upgrades": 
-                [
                     {
-                        "Id": 1,
-                        "Bought": False
-                    },
-                    {
-                        "Id": 2,
-                        "Bought": False
-                    },
-                    {
-                        "Id": 3,
-                        "Bought": False
+                        "Balance": 0.00,
+                        "MPC": 1.00,
+                        "MPS": 0.00,
+                        "ClickerUpgrades": [{"Id": i, "Bought": False} for i in range(1, 7)],
+                        "Buildings": [
+                            {
+                                "Name": building,
+                                "Amount": 0,
+                                "Upgrades": [{"Id": i, "Bought": False} for i in range(1, 4)]
+                            } for building in ["Farm", "Butcher", "Shop"]
+                        ]
                     }
                 ]
-            },
-            {
-                "Name": "Butcher",
-                "Amount": 0,
-                "Upgrades":
-                [
-                    {
-                        "Id": 1,
-                        "Bought": False
-                    }
-                ]
-            },
-            {
-                "Name": "Shop",
-                "Amount": 0,
-                "Upgrades":
-                [
-                    {
-                        "Id": 1,
-                        "Bought": False
-                    }
-                ]
-            }
-        ]
-    }
-]
+
+                # Write guestData to file
                 with open(guestFilename, 'w') as guestDataFile:
                     guestDataFile.write(str(guestData).replace("'", '"').replace("True", "true").replace("False", "false"))
-                    guestDataFile.close()
                 time.sleep(2)
                 GuestMode.startThreads()
+
+        # If user input is not recognized
         else:
             print("Please enter yes or no")
             time.sleep(2)
@@ -229,6 +141,8 @@ class Menu:
         global moneyPerClick
         global moneyPerSecond
         global playerInData
+
+        # If mode is normal, load player data
         if mode == "Normal":
             playerInData = player
             balance = playerData[playerInData]["Balance"]
@@ -237,12 +151,14 @@ class Menu:
             NormalMode.startThreads()
 
 class NormalMode:
+    # Starts two threads, one for perSecond and one for decide
     def startThreads():
         perSecondThread = threading.Thread(target = NormalMode.perSecond)
         decideThread = threading.Thread(target = NormalMode.decide)
         decideThread.start()
         perSecondThread.start()
 
+    # Saves the player's data and exits the game if the decision is "quit"
     def save(decision):
         if playerInData != None:
             playerData[playerInData]["Balance"] = balance
@@ -263,14 +179,18 @@ class NormalMode:
                 print("Sorry you don't have an account, the game will not save")
                 exit()
 
+    # Increases the balance by moneyPerSecond every second
     def perSecond():
         global balance
         global moneyPerSecond
         while True:
-            moneyPerSecond = ((buildingData[0]["MPS"] * playerData[playerInData]["Buildings"][0]["Amount"]) + (buildingData[1]["MPS"] * playerData[playerInData]["Buildings"][1]["Amount"]) + (buildingData[2]["MPS"] * playerData[playerInData]["Buildings"][1]["Amount"]))
+            moneyPerSecond = ((buildingData[0]["MPS"] * playerData[playerInData]["Buildings"][0]["Amount"]) + 
+                              (buildingData[1]["MPS"] * playerData[playerInData]["Buildings"][1]["Amount"]) + 
+                              (buildingData[2]["MPS"] * playerData[playerInData]["Buildings"][2]["Amount"]))
             balance += moneyPerSecond
             time.sleep(1)
 
+    # Presents the user with options and calls the corresponding function based on the user's decision
     def decide():
         print("Type 1 to click")
         print("Type 2 to buy clicker upgrades")
@@ -295,12 +215,14 @@ class NormalMode:
         else:
             NormalMode.click()
 
+    # Increases the balance by moneyPerClick
     def click():
         global balance
         global moneyPerClick
         balance += moneyPerClick
         NormalMode.decide()
 
+    # Allows the user to purchase clicker upgrades
     def purchaseClickerUpgrades():
         global moneyPerClick
         for i in range(0, len(clickerData)):
@@ -334,6 +256,7 @@ class NormalMode:
             time.sleep(4)
             NormalMode.purchaseClickerUpgrades()
 
+    # Allows the user to purchase buildings
     def purchaseBuildings():
             for i in range(0, len(buildingData)):
                 print(f"${buildingData[i]["Price"]:.2f} {buildingData[i]["Name"]}: ${buildingData[i]["MPS"]:.2f}/sec (You have {playerData[playerInData]["Buildings"][i]["Amount"]})")
@@ -357,6 +280,7 @@ class NormalMode:
                 time.sleep(4)
                 NormalMode.purchaseBuildings()
 
+    # Allows the user to purchase building upgrades
     def purchaseBuildingUpgrades():
             for i in range(0, len(buildingData)):
                 print(buildingData[i]["Name"])
@@ -378,13 +302,6 @@ class NormalMode:
                             print("Sorry you already bought this!")
                             time.sleep(1.5)
                             NormalMode.decide()
-                    # else:
-                    #     guestData[0]["Buildings"][selectedBuilding - 1]["Upgrades"][selectedBuildingUpgrade - 1]["Bought"] = True
-                    #     buildingData[selectedBuilding - 1]["MPS"] *= buildingData[selectedBuilding - 1]["Upgrades"][selectedBuildingUpgrade - 1]["Multiplier"]
-                    #     with open(guestFilename, 'w') as guestDataFile:
-                    #         guestDataFile.write(str(guestData).replace("'", '"').replace("True", "true").replace("False", "false"))
-                    #         guestDataFile.close()
-                    #         decide()
                 except ValueError:
                     print("Please enter a valid number")
                     time.sleep(4)
@@ -402,6 +319,7 @@ class NormalMode:
                 time.sleep(4)
                 NormalMode.purchaseBuildingUpgrades()         
     
+    # Displays the user's stats
     def checkStats():
             print(f"You have ${balance:.2f}!")
             print(f"You make ${moneyPerClick:.2f} everytime you click!")
@@ -410,12 +328,14 @@ class NormalMode:
             NormalMode.decide()
 
 class GuestMode:
+    # This method starts two threads: one for per second income and one for user decisions
     def startThreads():
         perSecondThread = threading.Thread(target = GuestMode.perSecond)
         decideThread = threading.Thread(target = GuestMode.decide)
         decideThread.start()
         perSecondThread.start()
 
+    # This method calculates the per second income based on the buildings owned and updates the balance every second
     def perSecond():
         global balance
         global moneyPerSecond
@@ -424,6 +344,7 @@ class GuestMode:
             balance += moneyPerSecond
             time.sleep(1)
 
+    # This method provides the user with options to interact with the game
     def decide():
         print("Type 1 to click")
         print("Type 2 to buy clicker upgrades")
@@ -448,12 +369,14 @@ class GuestMode:
         else:
             GuestMode.click()
 
+    # This method increases the balance by the money per click value
     def click():
         global balance
         global moneyPerClick
         balance += moneyPerClick
         GuestMode.decide()
 
+    # This method allows the user to purchase clicker upgrades
     def purchaseClickerUpgrades():
         global moneyPerClick
         for i in range(0, len(clickerData)):
@@ -481,6 +404,7 @@ class GuestMode:
             time.sleep(4)
             GuestMode.purchaseClickerUpgrades()
 
+    # This method allows the user to purchase buildings
     def purchaseBuildings():
             for i in range(0, len(buildingData)):
                 print(f"${buildingData[i]["Price"]:.2f} {buildingData[i]["Name"]}: ${buildingData[i]["MPS"]:.2f}/sec (You have {guestData[-1]["Buildings"][i]["Amount"]})")
@@ -501,6 +425,7 @@ class GuestMode:
                 time.sleep(4)
                 GuestMode.purchaseBuildings()
 
+    # This method allows the user to purchase building upgrades
     def purchaseBuildingUpgrades():
             for i in range(0, len(buildingData)):
                 print(buildingData[i]["Name"])
@@ -537,7 +462,8 @@ class GuestMode:
                 print("Please enter a valid number")
                 time.sleep(4)
                 GuestMode.purchaseBuildingUpgrades()         
-    
+
+    # This method allows the user to check their current stats
     def checkStats():
             print(f"You have ${balance:.2f}!")
             print(f"You make ${moneyPerClick:.2f} everytime you click!")
@@ -545,4 +471,5 @@ class GuestMode:
             time.sleep(6)
             GuestMode.decide()
 
+# Start the game
 Menu.menu()
