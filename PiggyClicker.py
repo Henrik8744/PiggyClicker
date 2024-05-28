@@ -5,11 +5,21 @@ import threading
 import sys
 
 # Define file paths
-buildingFilename = "PiggyClicker\JsonFiles\PiggyPrices.json"
-clickerFilename = "PiggyClicker\JsonFiles\ClickerUpgrades.json"
-playerFilename = "PiggyClicker\JsonFiles\PlayerData.json"
-playerBackupFilename = "PiggyClicker\JsonFiles\PlayerDataBackup.json"
-guestFilename = "PiggyClicker\JsonFiles\GuestData.json"
+computer = "s"
+
+if computer == "s":
+    buildingFilename = "JsonFiles\PiggyPrices.json"
+    clickerFilename = "JsonFiles\ClickerUpgrades.json"
+    playerFilename = "JsonFiles\PlayerData.json"
+    playerBackupFilename = "JsonFiles\PlayerDataBackup.json"
+    guestFilename = "JsonFiles\GuestData.json"
+else:
+    buildingFilename = "PiggyClicker\JsonFiles/PiggyPrices.json"
+    clickerFilename = "PiggyClicker\JsonFiles/ClickerUpgrades.json"
+    playerFilename = "PiggyClicker\JsonFiles/PlayerData.json"
+    playerBackupFilename = "PiggyClicker\JsonFiles/PlayerDataBackup.json"
+    guestFilename = "PiggyClicker\JsonFiles/GuestData.json"
+
 
 # Initialize global variables
 balance = 0
