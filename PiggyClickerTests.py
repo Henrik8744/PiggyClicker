@@ -324,7 +324,7 @@ class NormalMode:
     
     def checkStats():
             print(f"You have ${balance:.2f}!")
-            print(f"You make ${moneyPerClick:.2f} everytime you click!")
+            print(f"You make ${moneyPerClick:.2f} every time you click!")
             print(f"You make ${moneyPerSecond:.2f} every second!")
             time.sleep(6)
             NormalMode.decide()

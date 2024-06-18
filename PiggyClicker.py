@@ -5,7 +5,7 @@ import threading
 import sys
 
 # Define file paths
-computer = "s"
+computer = "h"
 
 if computer == "s":
     buildingFilename = "JsonFiles\PiggyPrices.json"
@@ -332,7 +332,7 @@ class NormalMode:
     # Displays the user's stats
     def checkStats():
             print(f"You have ${balance:.2f}!")
-            print(f"You make ${moneyPerClick:.2f} everytime you click!")
+            print(f"You make ${moneyPerClick:.2f} every time you click!")
             print(f"You make ${moneyPerSecond:.2f} every second!")
             time.sleep(6)
             NormalMode.decide()
@@ -476,7 +476,7 @@ class GuestMode:
     # This method allows the user to check their current stats
     def checkStats():
             print(f"You have ${balance:.2f}!")
-            print(f"You make ${moneyPerClick:.2f} everytime you click!")
+            print(f"You make ${moneyPerClick:.2f} every time you click!")
             print(f"You make ${moneyPerSecond:.2f} every second!")
             time.sleep(6)
             GuestMode.decide()

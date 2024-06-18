@@ -1,1 +1,44 @@
-[{"Id": 1, "Price": 99.99, "Name": "Reinforced keyboard", "MPC": 1, "Bought": true}, {"Id": 2, "Price": 249.99, "Name": "Stronger enter key", "MPC": 2, "Bought": false}, {"Id": 3, "Price": 699.99, "Name": "Better FPS", "MPC": 4, "Bought": false}, {"Id": 4, "Price": 1199.99, "Name": "Light up keyboard", "MPC": 6, "Bought": false}, {"Id": 5, "Price": 1999.99, "Name": "RBG keyboard", "MPC": 11, "Bought": false}, {"Id": 6, "Price": 4500.13, "Name": "Athroplasty", "MPC": 27, "Bought": true}]
+[
+    {
+        "Id": 1,
+        "Price": 99.99,
+        "Name": "Reinforced keyboard",
+        "MPC": 1,
+        "Bought": true
+    },
+    {
+        "Id": 2,
+        "Price": 249.99,
+        "Name": "Stronger enter key",
+        "MPC": 2,
+        "Bought": false
+    },
+    {
+        "Id": 3,
+        "Price": 699.99,
+        "Name": "Better FPS",
+        "MPC": 4,
+        "Bought": false
+    },
+    {
+        "Id": 4,
+        "Price": 1199.99,
+        "Name": "Light up keyboard",
+        "MPC": 6,
+        "Bought": false
+    },
+    {
+        "Id": 5,
+        "Price": 1999.99,
+        "Name": "RBG keyboard",
+        "MPC": 11,
+        "Bought": false
+    },
+    {
+        "Id": 6,
+        "Price": 4500.13,
+        "Name": "Athroplasty",
+        "MPC": 27,
+        "Bought": true
+    }
+]
